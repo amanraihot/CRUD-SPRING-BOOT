@@ -18,7 +18,7 @@ import java.util.Optional;
 import static java.util.Collections.singletonList;
 
 @Service
-public class UserDetailsServiceImp implements UserDetailsService {
+public class UserDetailServiceImp implements UserDetailsService {
 
 
     @Autowired
@@ -31,7 +31,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
         User user = userOptional.orElseThrow(()->new UsernameNotFoundException("No user found"));
 
         return new org.springframework.security
-                .core.userdetails.User(user.getUserName(), user.getPassword(),
+                .core.userdetails.User(user.getUsername(), user.getPassword(),
                 user.isActive(), true, true,
                 true, getAuthorities("USER"));
     }

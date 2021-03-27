@@ -20,9 +20,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long userId;
 
-    @Column(name = "userName")
+    @Column(name = "username")
     @NotBlank(message = "Enter Username")
-    private String userName;
+    private String username;
 
     @NotBlank(message = "Without password we will not let you in")
     @Column(name = "password")
@@ -32,6 +32,10 @@ public class User {
     @NotBlank(message = "Email id is important")
     @Column(name = "emailId")
     private String email;
+
+    private boolean isActive;
+
+
 
 
 
