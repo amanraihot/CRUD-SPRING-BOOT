@@ -1,4 +1,6 @@
 package com.example.demo.config;
+import com.example.demo.security.JwtAuthenticationFilter;
+import com.example.demo.service.UserDetailServiceImp;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailServiceImp userDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -29,15 +36,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     {
         return super.authenticationManagerBean();
     }
+
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception
     {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers()
+                .antMatchers("/api/auth/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,6 +33,9 @@ public class User {
     @NotBlank(message = "Email id is important")
     @Column(name = "emailId")
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    private List<Blogs> userBlogs;
 
     private boolean isActive;
 
