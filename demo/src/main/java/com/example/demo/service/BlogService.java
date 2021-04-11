@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.BlogDto;
+import com.example.demo.dto.BlogUpdateDto;
 import com.example.demo.model.Blogs;
 import com.example.demo.model.User;
 import com.example.demo.repo.BlogRepo;
@@ -31,18 +32,46 @@ public class BlogService  {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private AuthService authService;
+
     public ResponseEntity<String> createBlog(BlogDto blogDto)
     {
         Blogs blog = new Blogs();
         blog.setBlog(blogDto.getBlog());
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(auth.getName());
-        Optional<User>  current = userRepo.findByUsername(auth.getName());
+        User current = authService.getCurrentUser();
         blog.setBlog(blogDto.getBlog());
-        blog.setUser(current.get());
+        blog.setUser(current);
         blog.setDateCreated(Instant.now());
         blogRepo.save(blog);
         return new ResponseEntity<>("Done",HttpStatus.OK);
     }
 
+    public ResponseEntity<String> deleteBlog(Long id)
+    {
+        System.out.println("Fdf");
+        Optional<Blogs> curr = blogRepo.findById(id);
+        Blogs blog = curr.get();
+        if(blog.getUser() == authService.getCurrentUser())
+            blogRepo.delete(blog);
+        else
+            return new ResponseEntity<>("you cant delete others post",HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("deleted blog successfully",HttpStatus.OK);
+    }
+
+    public ResponseEntity<String>   updateBlog(Long id, BlogUpdateDto blogUpdateDto)
+    {
+        Optional<Blogs> curr = blogRepo.findById(id);
+        Blogs blog = curr.get();
+        if(blog.getUser() == authService.getCurrentUser())
+        {
+            blog.setBlog(blogUpdateDto.getBlog());
+            blogRepo.save(blog);
+        }
+        else
+            return  new ResponseEntity<>("only blog owner can delete", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("updated blog successfully",HttpStatus.OK);
+    }
 }

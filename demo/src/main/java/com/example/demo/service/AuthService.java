@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Service
@@ -61,8 +62,15 @@ public class AuthService {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
         authenticationResponse.setAuthenticationToken(token);
         return authenticationResponse;
+    }
 
-
+    public User getCurrentUser()
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> curr = userRepo.findByUsername(authentication.getName());
+        if(curr.isPresent())
+            return curr.get();
+        return  null;
     }
 
 }
